@@ -5,6 +5,7 @@ import time
 import traceback
 import json
 from datetime import datetime
+from turtle import color
 
 import requests
 from termcolor import colored
@@ -382,6 +383,7 @@ def print_messages(streaming: bool = False):
             # Note: This relies on the file being cleaned up (or not) before start()
             with open(FILE_PATH, 'w', encoding="UTF-8") as f:
                 f.write("\n".join(output_lines) + "\n")
+            print(colored(f"Writing to file completed, file located at {FILE_PATH}", "green"))
 
 
 def format_message(msg):
@@ -479,7 +481,7 @@ def main():
         else:
             # Interactive mode
             print(colored("=== Instagram DM Scraper ===\n", "cyan"))
-            SESSIONID = input("Account's Sessionid: ")
+            SESSIONID = input("Your account's Sessionid: ")
             
             check_threads = input("See chats list (y/N): ").lower()
             if check_threads == "y":
@@ -495,9 +497,14 @@ def main():
                 FILE_PATH = input("File path + name: ")
                 if os.path.isfile(FILE_PATH):
                     print(colored("Entered path is a file, continuing", "green"))
-                else:
-                    print(colored("Entered path isn't a file, omitted saving to file.", "red"))
-                    os.remove(FILE_PATH)
+                elif not os.path.exists(FILE_PATH):
+                    print(colored("Could not find the entered file path...", "yellow"))
+                    create_file = input("Entered file does not exist, create it (y/N)? ")
+                    if create_file == "y":
+                        with open(FILE_PATH, "w") as file:
+                            file.write("")
+                    else:
+                        print(colored("Saving to file omitted.", "red"))
             
             temp_limit_date = input("Limit date (dd/mm/yyyy[@hh:mm:ss]): ")
             if temp_limit_date:
